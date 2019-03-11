@@ -1,0 +1,4 @@
+﻿  cn_com_test_opus_OpusDecoder.c
+    正在创建库 D:\人工智能学习资料\github\opus\win32\VS2015\x64\Debug\opusjni.lib 和对象 D:\人工智能学习资料\github\opus\win32\VS2015\x64\Debug\opusjni.exp
+LINK : warning LNK4098: 默认库“LIBCMTD”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+  opusjni.vcxproj -> D:\人工智能学习资料\github\opus\win32\VS2015\x64\Debug\opusjni.dll
