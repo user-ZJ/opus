@@ -66,6 +66,29 @@ java8
 
 参考：https://www.cnblogs.com/charles04/p/3906102.html  
 
+# Ubuntu环境下使用
+
+## 编译libopus.so
+1. 下载工程  
+git clone https://github.com/user-ZJ/opus.git  
+2. 配置并编译工程  
+  
+	在opus目录下  
+	autoreconf -vfi  
+	配置编译选项，将输出目录指定为opus/output  
+	./configure --prefix=/home/zack/github/opus/output
+	make;make install  
+在opus/output/lib目录下生成libopus.so库  
+
+## 生成libopusjni.so
+1. 将上面编写好的jni代码拷贝到ubuntu/opusjni目录下  
+2. 编写Makefile文件，如ubuntu/opusjni/Makefile  
+3. make生成libopusjni库  
+4. 使用ldd -r libopusjni.so命令查看libopusjni库是否正确  
+![](images/config10.jpg)     
+
+## 创建java工程，测试opus编解码
+同window版本，使用linux版本eclipse，导入java目录下的工程，将连接libopusjni.dll库修改为链接libopusjni.so库。  
 
 
 

@@ -1,2 +1,6 @@
 /cn/
 /demo.pcm
+/cn_com_test_opus_OpusDecoder.h
+/cn_com_test_opus_OpusEncoder.h
+/encodedbyte.pcm
+/encodedshort.pcm
