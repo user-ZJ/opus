@@ -216,53 +216,53 @@ int main(int argc, char *argv[])
     OpusEncoder *enc=NULL;
     OpusDecoder *dec=NULL;
     int args;
-    int len[2];
-    int frame_size, channels;
-    opus_int32 bitrate_bps=0;
-    unsigned char *data[2] = {NULL, NULL};
+    int len[2];   //len[0]解码帧opus数据长度
+    int frame_size, channels;  //帧大小（编码参数），通道数
+    opus_int32 bitrate_bps=0;  //比特率 最小1000
+    unsigned char *data[2] = {NULL, NULL};  //data[0]正常情况下使用，data[1]使用内置SILK内置FEC时使用
     unsigned char *fbytes=NULL;
-    opus_int32 sampling_rate;
-    int use_vbr;
-    int max_payload_bytes;
-    int complexity;
-    int use_inbandfec;
-    int use_dtx;
-    int forcechannels;
-    int cvbr = 0;
-    int packet_loss_perc;
-    opus_int32 count=0, count_act=0;
+    opus_int32 sampling_rate;  //音频采样率
+    int use_vbr;  //启用恒定比特率，编码参数
+    int max_payload_bytes; //最大载荷字节数，编码参数，1500
+    int complexity; //复杂度,编码参数，默认为10
+    int use_inbandfec;  //启用SILK内置FEC
+    int use_dtx;  //启用SILK DTX,编码参数
+    int forcechannels;  //强制单声道编码，编码参数
+    int cvbr = 0;  //启用约束变量比特率,编码参数
+    int packet_loss_perc;  ////模拟丢包百分比
+    opus_int32 count=0, count_act=0;  //帧计算器
     int k;
     opus_int32 skip=0;
     int stop=0;
-    short *in=NULL;
+    short *in=NULL;  //读入的数据
     short *out=NULL;
-    int application=OPUS_APPLICATION_AUDIO;
+    int application=OPUS_APPLICATION_AUDIO;  //编码模式voip | audio | restricted-lowdelay 
     double bits=0.0, bits_max=0.0, bits_act=0.0, bits2=0.0, nrg;
-    double tot_samples=0;
-    opus_uint64 tot_in, tot_out;
-    int bandwidth=OPUS_AUTO;
+    double tot_samples=0;  //opus数据总长度
+    opus_uint64 tot_in, tot_out; //解码数据（PCM）总数
+    int bandwidth=OPUS_AUTO;  //音频带宽，编码参数
     const char *bandwidth_string;
     int lost = 0, lost_prev = 1;
-    int toggle = 0;
-    opus_uint32 enc_final_range[2];
+    int toggle = 0;  //正常模式为0，设置了use_inbandfec则为1
+    opus_uint32 enc_final_range[2]; //最终范围
     opus_uint32 dec_final_range;
     int encode_only=0, decode_only=0;
-    int max_frame_size = 48000*2;
+    int max_frame_size = 48000*2;  
     size_t num_read;
     int curr_read=0;
     int sweep_bps = 0;
-    int random_framesize=0, newsize=0, delayed_celt=0;
+    int random_framesize=0, newsize=0, delayed_celt=0;  //随机帧大小，编码参数
     int sweep_max=0, sweep_min=0;
-    int random_fec=0;
-    const int (*mode_list)[4]=NULL;
-    int nb_modes_in_list=0;
+    int random_fec=0;  //随机FEC，编码参数
+    const int (*mode_list)[4]=NULL; //slik hybrid celt参数
+    int nb_modes_in_list=0;  //slik hybrid celt参数
     int curr_mode=0;
     int curr_mode_count=0;
     int mode_switch_time = 48000;
     int nb_encoded=0;
-    int remaining=0;
-    int variable_duration=OPUS_FRAMESIZE_ARG;
-    int delayed_decision=0;
+    int remaining=0;  //从pcm中读取数据不足一帧时，缺失的数据量
+    int variable_duration=OPUS_FRAMESIZE_ARG;  //使用前瞻语音时参数
+    int delayed_decision=0;  //是否使用前瞻语音/音乐检测,编码参数
     int ret = EXIT_FAILURE;
 
     if (argc < 5 )
@@ -327,26 +327,26 @@ int main(int argc, char *argv[])
 
     if (!decode_only)
     {
-       bitrate_bps = (opus_int32)atol(argv[args]);
+       bitrate_bps = (opus_int32)atol(argv[args]);  
        args++;
     }
 
     /* defaults: */
-    use_vbr = 1;
-    max_payload_bytes = MAX_PACKET;
-    complexity = 10;
-    use_inbandfec = 0;
-    forcechannels = OPUS_AUTO;
-    use_dtx = 0;
-    packet_loss_perc = 0;
+    use_vbr = 1;  //是否启用恒定比特率
+    max_payload_bytes = MAX_PACKET; //最大有效负载 1500
+    complexity = 10;  //复杂度
+    use_inbandfec = 0;  //是否启用SILK内置FEC
+    forcechannels = OPUS_AUTO;  //是否强制单声道编码，即使是立体声输入
+    use_dtx = 0;  //是否启用SILK DTX
+    packet_loss_perc = 0;  //丢包率
 
     while( args < argc - 2 ) {
         /* process command line options */
-        if( strcmp( argv[ args ], "-cbr" ) == 0 ) {
-            check_encoder_option(decode_only, "-cbr");
+        if( strcmp( argv[ args ], "-cbr" ) == 0 ) { //启用恒定比特率，编码参数
+            check_encoder_option(decode_only, "-cbr");  //decode_only 不允许使用-cbr参数
             use_vbr = 0;
             args++;
-        } else if( strcmp( argv[ args ], "-bandwidth" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-bandwidth" ) == 0 ) {  //设置音频带宽，编码参数
             check_encoder_option(decode_only, "-bandwidth");
             if (strcmp(argv[ args + 1 ], "NB")==0)
                 bandwidth = OPUS_BANDWIDTH_NARROWBAND;
@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
                 goto failure;
             }
             args += 2;
-        } else if( strcmp( argv[ args ], "-framesize" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-framesize" ) == 0 ) {  //帧大小，单位为毫秒; 默认值：20 ,编码参数
             check_encoder_option(decode_only, "-framesize");
             if (strcmp(argv[ args + 1 ], "2.5")==0)
                 frame_size = sampling_rate/400;
@@ -392,41 +392,41 @@ int main(int argc, char *argv[])
                 goto failure;
             }
             args += 2;
-        } else if( strcmp( argv[ args ], "-max_payload" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-max_payload" ) == 0 ) { //最大有效负载，编码参数
             check_encoder_option(decode_only, "-max_payload");
             max_payload_bytes = atoi( argv[ args + 1 ] );
             args += 2;
-        } else if( strcmp( argv[ args ], "-complexity" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-complexity" ) == 0 ) {  //复杂度,编码参数，默认为10
             check_encoder_option(decode_only, "-complexity");
             complexity = atoi( argv[ args + 1 ] );
             args += 2;
-        } else if( strcmp( argv[ args ], "-inbandfec" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-inbandfec" ) == 0 ) {  //启用SILK内置FEC
             use_inbandfec = 1;
             args++;
-        } else if( strcmp( argv[ args ], "-forcemono" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-forcemono" ) == 0 ) {  //强制单声道编码，编码参数
             check_encoder_option(decode_only, "-forcemono");
             forcechannels = 1;
             args++;
-        } else if( strcmp( argv[ args ], "-cvbr" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-cvbr" ) == 0 ) {  //启用约束变量比特率,编码参数
             check_encoder_option(decode_only, "-cvbr");
             cvbr = 1;
             args++;
-        } else if( strcmp( argv[ args ], "-delayed-decision" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-delayed-decision" ) == 0 ) {  //使用前瞻语音/音乐检测,编码参数
             check_encoder_option(decode_only, "-delayed-decision");
             delayed_decision = 1;
             args++;
-        } else if( strcmp( argv[ args ], "-dtx") == 0 ) {
+        } else if( strcmp( argv[ args ], "-dtx") == 0 ) {  //启用SILK DTX,编码参数
             check_encoder_option(decode_only, "-dtx");
             use_dtx = 1;
             args++;
-        } else if( strcmp( argv[ args ], "-loss" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-loss" ) == 0 ) {  //模拟丢包百分比
             packet_loss_perc = atoi( argv[ args + 1 ] );
             args += 2;
-        } else if( strcmp( argv[ args ], "-sweep" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-sweep" ) == 0 ) {  //api未说明
             check_encoder_option(decode_only, "-sweep");
             sweep_bps = atoi( argv[ args + 1 ] );
             args += 2;
-        } else if( strcmp( argv[ args ], "-random_framesize" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-random_framesize" ) == 0 ) {  //随机帧大小，编码参数
             check_encoder_option(decode_only, "-random_framesize");
             random_framesize = 1;
             args++;
@@ -434,7 +434,7 @@ int main(int argc, char *argv[])
             check_encoder_option(decode_only, "-sweep_max");
             sweep_max = atoi( argv[ args + 1 ] );
             args += 2;
-        } else if( strcmp( argv[ args ], "-random_fec" ) == 0 ) {
+        } else if( strcmp( argv[ args ], "-random_fec" ) == 0 ) {  //随机FEC，编码参数
             check_encoder_option(decode_only, "-random_fec");
             random_fec = 1;
             args++;
@@ -490,14 +490,14 @@ int main(int argc, char *argv[])
         goto failure;
     }
 
-    inFile = argv[argc-2];
+    inFile = argv[argc-2];  //输入文件
     fin = fopen(inFile, "rb");
     if (!fin)
     {
         fprintf (stderr, "Could not open input file %s\n", argv[argc-2]);
         goto failure;
     }
-    if (mode_list)
+    if (mode_list) //slik hybrid celt参数
     {
        int size;
        fseek(fin, 0, SEEK_END);
@@ -548,8 +548,7 @@ int main(int argc, char *argv[])
        }
     }
 
-
-    switch(bandwidth)
+    switch(bandwidth)  //音频带宽，默认为OPUS_AUTO
     {
     case OPUS_BANDWIDTH_NARROWBAND:
          bandwidth_string = "narrowband";
@@ -583,15 +582,17 @@ int main(int argc, char *argv[])
                        (long)sampling_rate, bitrate_bps*0.001,
                        bandwidth_string, frame_size);
 
-    in = (short*)malloc(max_frame_size*channels*sizeof(short));
-    out = (short*)malloc(max_frame_size*channels*sizeof(short));
+
+	printf("max_frame_size %d\n",max_frame_size); //48000*2
+    in = (short*)malloc(max_frame_size*channels*sizeof(short));  //输入buff，48000*2*channels*2
+    out = (short*)malloc(max_frame_size*channels*sizeof(short)); //输出buff，48000*2*channels*2
     /* We need to allocate for 16-bit PCM data, but we store it as unsigned char. */
-    fbytes = (unsigned char*)malloc(max_frame_size*channels*sizeof(short));
-    data[0] = (unsigned char*)calloc(max_payload_bytes,sizeof(unsigned char));
-    if ( use_inbandfec ) {
+    fbytes = (unsigned char*)malloc(max_frame_size*channels*sizeof(short));  //从pcm文件中按字节读取的数据
+    data[0] = (unsigned char*)calloc(max_payload_bytes,sizeof(unsigned char));  //分配1500*2byte内存
+    if ( use_inbandfec ) {  //启用SILK内置FEC
         data[1] = (unsigned char*)calloc(max_payload_bytes,sizeof(unsigned char));
     }
-    if(delayed_decision)
+    if(delayed_decision)  //使用前瞻语音
     {
        if (frame_size==sampling_rate/400)
           variable_duration = OPUS_FRAMESIZE_2_5_MS;
@@ -616,11 +617,11 @@ int main(int argc, char *argv[])
     }
     while (!stop)
     {
-        if (delayed_celt)
+        if (delayed_celt)  //0
         {
             frame_size = newsize;
             delayed_celt = 0;
-        } else if (random_framesize && rand()%20==0)
+        } else if (random_framesize && rand()%20==0)  //随机帧大小
         {
             newsize = rand()%6;
             switch(newsize)
@@ -642,7 +643,7 @@ int main(int argc, char *argv[])
                 frame_size = newsize;
             }
         }
-        if (random_fec && rand()%30==0)
+        if (random_fec && rand()%30==0)  //随机FEC
         {
            opus_encoder_ctl(enc, OPUS_SET_INBAND_FEC(rand()%4==0));
         }
@@ -652,7 +653,8 @@ int main(int argc, char *argv[])
             num_read = fread(ch, 1, 4, fin);
             if (num_read!=4)
                 break;
-            len[toggle] = char_to_int(ch);
+            len[toggle] = char_to_int(ch);  //4byte->int,单帧数据长度（负载）
+			printf("len[toggle] %d toggle %d\n", len[toggle],toggle);
             if (len[toggle]>max_payload_bytes || len[toggle]<0)
             {
                 fprintf(stderr, "Invalid payload length: %d\n",len[toggle]);
@@ -661,7 +663,8 @@ int main(int argc, char *argv[])
             num_read = fread(ch, 1, 4, fin);
             if (num_read!=4)
                 break;
-            enc_final_range[toggle] = char_to_int(ch);
+            enc_final_range[toggle] = char_to_int(ch);  //编码最终范围
+			printf("enc_final_range[toggle] %d toggle %d\n", enc_final_range[toggle], toggle);
             num_read = fread(data[toggle], 1, len[toggle], fin);
             if (num_read!=(size_t)len[toggle])
             {
@@ -672,24 +675,25 @@ int main(int argc, char *argv[])
             }
         } else {
             int i;
-            if (mode_list!=NULL)
+            if (mode_list!=NULL)  //slik hybrid celt参数
             {
                 opus_encoder_ctl(enc, OPUS_SET_BANDWIDTH(mode_list[curr_mode][1]));
                 opus_encoder_ctl(enc, OPUS_SET_FORCE_MODE(mode_list[curr_mode][0]));
                 opus_encoder_ctl(enc, OPUS_SET_FORCE_CHANNELS(mode_list[curr_mode][3]));
                 frame_size = mode_list[curr_mode][2];
             }
-            num_read = fread(fbytes, sizeof(short)*channels, frame_size-remaining, fin);
+            num_read = fread(fbytes, sizeof(short)*channels, frame_size-remaining, fin);  //从pcm中每次读frame_size大小数据
+			printf("remaining %d\n", remaining);
             curr_read = (int)num_read;
             tot_in += curr_read;
             for(i=0;i<curr_read*channels;i++)
             {
-                opus_int32 s;
+                opus_int32 s;  //byte->int 
                 s=fbytes[2*i+1]<<8|fbytes[2*i];
                 s=((s&0xFFFF)^0x8000)-0x8000;
                 in[i+remaining*channels]=s;
             }
-            if (curr_read+remaining < frame_size)
+            if (curr_read+remaining < frame_size)  //剩余数据不足一帧时，结束
             {
                 for (i=(curr_read+remaining)*channels;i<frame_size*channels;i++)
                    in[i] = 0;
@@ -697,8 +701,12 @@ int main(int argc, char *argv[])
                    stop = 1;
             }
             len[toggle] = opus_encode(enc, in, frame_size, data[toggle], max_payload_bytes);
+			printf("frame_size %d max_payload_bytes %d toggle %d len[toggle] %d bitrate_bps %d\n", frame_size, max_payload_bytes, toggle, len[toggle], bitrate_bps);
+			//opus_packet_get_samples_per_frame 获取Opus数据包中每帧的样本数 160
+			//opus_packet_get_nb_frames 获取Opus数据包中的帧数  1
             nb_encoded = opus_packet_get_samples_per_frame(data[toggle], sampling_rate)*opus_packet_get_nb_frames(data[toggle], len[toggle]);
-            remaining = frame_size-nb_encoded;
+			printf("nb_encoded %d samples %d nb_frames %d\n", nb_encoded, opus_packet_get_samples_per_frame(data[toggle], sampling_rate), opus_packet_get_nb_frames(data[toggle], len[toggle]));
+			remaining = frame_size-nb_encoded;  //0
             for(i=0;i<remaining*channels;i++)
                in[i] = in[nb_encoded*channels+i];
             if (sweep_bps!=0)
@@ -759,17 +767,17 @@ int main(int argc, char *argv[])
                fprintf(stderr, "Error writing.\n");
                goto failure;
             }
-            tot_samples += nb_encoded;
+            tot_samples += nb_encoded;  //opus数据总长度
         } else {
             opus_int32 output_samples;
-            lost = len[toggle]==0 || (packet_loss_perc>0 && rand()%100 < packet_loss_perc);
+            lost = len[toggle]==0 || (packet_loss_perc>0 && rand()%100 < packet_loss_perc); //是否有数据丢失
             if (lost)
                opus_decoder_ctl(dec, OPUS_GET_LAST_PACKET_DURATION(&output_samples));
             else
-               output_samples = max_frame_size;
+               output_samples = max_frame_size;  //48000 * 2
             if( count >= use_inbandfec ) {
                 /* delay by one packet when using in-band FEC */
-                if( use_inbandfec  ) {
+                if( use_inbandfec  ) {  //启用SILK内置FEC
                     if( lost_prev ) {
                         /* attempt to decode with in-band FEC from next packet */
                         opus_decoder_ctl(dec, OPUS_GET_LAST_PACKET_DURATION(&output_samples));
@@ -781,18 +789,20 @@ int main(int argc, char *argv[])
                     }
                 } else {
                     output_samples = opus_decode(dec, lost ? NULL : data[toggle], len[toggle], out, output_samples, 0);
+					printf("len[toggle] %d toggle %d output_samples %d\n", len[toggle], toggle, output_samples);
                 }
                 if (output_samples>0)
                 {
-                    if (!decode_only && tot_out + output_samples > tot_in)
+                    if (!decode_only && tot_out + output_samples > tot_in)  
                     {
                        stop=1;
                        output_samples = (opus_int32)(tot_in - tot_out);
                     }
-                    if (output_samples>skip) {
+                    if (output_samples>skip) { 
                        int i;
                        for(i=0;i<(output_samples-skip)*channels;i++)
                        {
+						  //shot->byte
                           short s;
                           s=out[i+(skip*channels)];
                           fbytes[2*i]=s&0xFF;
@@ -802,7 +812,7 @@ int main(int argc, char *argv[])
                           fprintf(stderr, "Error writing.\n");
                           goto failure;
                        }
-                       tot_out += output_samples-skip;
+                       tot_out += output_samples-skip;  //解码数据总数
                     }
                     if (output_samples<skip) skip -= output_samples;
                     else skip = 0;
@@ -810,7 +820,7 @@ int main(int argc, char *argv[])
                    fprintf(stderr, "error decoding frame: %s\n",
                                    opus_strerror(output_samples));
                 }
-                tot_samples += output_samples;
+                tot_samples += output_samples; //解码数据总数
             }
         }
 
@@ -888,5 +898,6 @@ failure:
     free(in);
     free(out);
     free(fbytes);
+	getchar();
     return ret;
 }
