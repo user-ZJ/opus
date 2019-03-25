@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
     short *in=NULL;  //读入的数据
     short *out=NULL;
     int application=OPUS_APPLICATION_AUDIO;  //编码模式voip | audio | restricted-lowdelay 
-    double bits=0.0, bits_max=0.0, bits_act=0.0, bits2=0.0, nrg;
+    double bits=0.0, bits_max=0.0, bits_act=0.0, bits2=0.0, nrg;  //用于计算比特率
     double tot_samples=0;  //opus数据总长度
     opus_uint64 tot_in, tot_out; //解码数据（PCM）总数
     int bandwidth=OPUS_AUTO;  //音频带宽，编码参数
@@ -583,7 +583,6 @@ int main(int argc, char *argv[])
                        bandwidth_string, frame_size);
 
 
-	printf("max_frame_size %d\n",max_frame_size); //48000*2
     in = (short*)malloc(max_frame_size*channels*sizeof(short));  //输入buff，48000*2*channels*2
     out = (short*)malloc(max_frame_size*channels*sizeof(short)); //输出buff，48000*2*channels*2
     /* We need to allocate for 16-bit PCM data, but we store it as unsigned char. */
@@ -654,7 +653,6 @@ int main(int argc, char *argv[])
             if (num_read!=4)
                 break;
             len[toggle] = char_to_int(ch);  //4byte->int,单帧数据长度（负载）
-			printf("len[toggle] %d toggle %d\n", len[toggle],toggle);
             if (len[toggle]>max_payload_bytes || len[toggle]<0)
             {
                 fprintf(stderr, "Invalid payload length: %d\n",len[toggle]);
@@ -683,7 +681,6 @@ int main(int argc, char *argv[])
                 frame_size = mode_list[curr_mode][2];
             }
             num_read = fread(fbytes, sizeof(short)*channels, frame_size-remaining, fin);  //从pcm中每次读frame_size大小数据
-			printf("remaining %d\n", remaining);
             curr_read = (int)num_read;
             tot_in += curr_read;
             for(i=0;i<curr_read*channels;i++)

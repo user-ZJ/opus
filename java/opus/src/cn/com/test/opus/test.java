@@ -16,7 +16,7 @@ public class test {
 	public static void main(String [] args) {
 		OpusEncoder encoder = new OpusEncoder();
 		OpusDecoder decoder = new OpusDecoder();
-		int enError = encoder.init(SAMPLE_RATE, NUM_CHANNELS, OpusEncoder.OPUS_APPLICATION_AUDIO);
+		int enError = encoder.init(SAMPLE_RATE, NUM_CHANNELS, FRAME_SIZE,OpusEncoder.OPUS_APPLICATION_AUDIO);
 		int deError = decoder.init(SAMPLE_RATE, NUM_CHANNELS);
 		File pcmFile = new File("src", "demo.pcm");
 		File PcmFile_short = new File("src", "encodedshort.pcm");
@@ -30,14 +30,9 @@ public class test {
 			while ((lenth = fileInputStream.read(buf)) != -1) {
 				//encode:short->byte decode:byte->short 
 				short [] bs = BytesTransUtil.getInstance().Bytes2Shorts(buf);
-				byte [] encoded = encoder.encodeShorts(bs, FRAME_SIZE);
-				short [] decoded = decoder.decodeShorts(encoded, FRAME_SIZE);
+				byte [] encoded = encoder.encodeShorts(bs);
+				short [] decoded = decoder.decodeShorts(encoded);
 				fileOutputStream_short.write(BytesTransUtil.getInstance().Shorts2Bytes(decoded));
-				
-				//encode:byte->byte decode:byte->byte 
-				byte [] encodedbyte = encoder.encodeBytes(buf, FRAME_SIZE);
-				byte [] decodedbyte = decoder.decodeBytes(encodedbyte, FRAME_SIZE);
-				fileOutputStream_byte.write(decodedbyte);
 			}
 			fileOutputStream_short.close();
 			fileOutputStream_byte.close();
@@ -48,6 +43,8 @@ public class test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//int res = encoder.encodeFile("E:\\project\\eclipse\\java\\opus\\src\\demo.pcm","E:\\project\\eclipse\\java\\opus\\src\\jdemo.opus");
+		int res = decoder.decodeFile("E:\\project\\eclipse\\java\\opus\\src\\jdemo.opus","E:\\project\\eclipse\\java\\opus\\src\\jdemo.pcm");
 		
 		/*try {
 			FileInputStream fileInputStream = new FileInputStream(pcmFile);
@@ -67,13 +64,6 @@ public class test {
 				decoded_size = decoder.decodeShorts(encBuf2, bs_dec,FRAME_SIZE);
 				short [] bs_dec2 = Arrays.copyOf(bs_dec, decoded_size);
 				fileOutputStream_short.write(BytesTransUtil.getInstance().Shorts2Bytes(bs_dec2));
-				
-				//encode:byte->byte decode:byte->byte 
-				encoded_size = encoder.encodeBytes(buf, FRAME_SIZE,encBuf);
-				encBuf2 = Arrays.copyOf(encBuf, encoded_size);
-				decoded_size = decoder.decodeBytes(encBuf2, decBuf,FRAME_SIZE);
-				byte [] decBuf2 = Arrays.copyOf(decBuf, decoded_size);
-				fileOutputStream_byte.write(decBuf2);
 			}
 			fileOutputStream_short.close();
 			fileOutputStream_byte.close();

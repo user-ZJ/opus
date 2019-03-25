@@ -91,5 +91,9 @@ git clone https://github.com/user-ZJ/opus.git
 同window版本，使用linux版本eclipse，导入java目录下的工程，将连接libopusjni.dll库修改为链接libopusjni.so库。  
 
 
+# opus demo使用方式
+opus.md  
+
+
 
 	

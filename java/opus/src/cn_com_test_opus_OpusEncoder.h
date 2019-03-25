@@ -16,42 +16,42 @@ extern "C" {
 /*
  * Class:     cn_com_test_opus_OpusEncoder
  * Method:    nativeInitEncoder
- * Signature: (III)I
+ * Signature: (IIII)I
  */
 JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusEncoder_nativeInitEncoder
-  (JNIEnv *, jobject, jint, jint, jint);
+  (JNIEnv *, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     cn_com_test_opus_OpusEncoder
  * Method:    nativeEncodeShorts
- * Signature: ([SI[B)I
+ * Signature: ([S[B)I
  */
-JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeShorts___3SI_3B
-  (JNIEnv *, jobject, jshortArray, jint, jbyteArray);
-
-/*
- * Class:     cn_com_test_opus_OpusEncoder
- * Method:    nativeEncodeBytes
- * Signature: ([BI[B)I
- */
-JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeBytes___3BI_3B
-  (JNIEnv *, jobject, jbyteArray, jint, jbyteArray);
+JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeShorts___3S_3B
+  (JNIEnv *, jobject, jshortArray, jbyteArray);
 
 /*
  * Class:     cn_com_test_opus_OpusEncoder
  * Method:    nativeEncodeShorts
- * Signature: ([SI)[B
+ * Signature: ([S)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeShorts___3SI
-  (JNIEnv *, jobject, jshortArray, jint);
+JNIEXPORT jbyteArray JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeShorts___3S
+  (JNIEnv *, jobject, jshortArray);
 
 /*
  * Class:     cn_com_test_opus_OpusEncoder
- * Method:    nativeEncodeBytes
- * Signature: ([BI)[B
+ * Method:    nativeSetBitrate
+ * Signature: (I)V
  */
-JNIEXPORT jbyteArray JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeBytes___3BI
-  (JNIEnv *, jobject, jbyteArray, jint);
+JNIEXPORT void JNICALL Java_cn_com_test_opus_OpusEncoder_nativeSetBitrate
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     cn_com_test_opus_OpusEncoder
+ * Method:    nativeEncodeFile
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusEncoder_nativeEncodeFile
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     cn_com_test_opus_OpusEncoder

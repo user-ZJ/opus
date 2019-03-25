@@ -18,34 +18,26 @@ JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusDecoder_nativeInitDecoder
 /*
  * Class:     cn_com_test_opus_OpusDecoder
  * Method:    nativeDecodeShorts
- * Signature: ([B[SI)I
+ * Signature: ([B[S)I
  */
-JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeShorts___3B_3SI
-  (JNIEnv *, jobject, jbyteArray, jshortArray, jint);
-
-/*
- * Class:     cn_com_test_opus_OpusDecoder
- * Method:    nativeDecodeBytes
- * Signature: ([B[BI)I
- */
-JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeBytes___3B_3BI
-  (JNIEnv *, jobject, jbyteArray, jbyteArray, jint);
+JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeShorts___3B_3S
+  (JNIEnv *, jobject, jbyteArray, jshortArray);
 
 /*
  * Class:     cn_com_test_opus_OpusDecoder
  * Method:    nativeDecodeShorts
- * Signature: ([BI)[S
+ * Signature: ([B)[S
  */
-JNIEXPORT jshortArray JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeShorts___3BI
-  (JNIEnv *, jobject, jbyteArray, jint);
+JNIEXPORT jshortArray JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeShorts___3B
+  (JNIEnv *, jobject, jbyteArray);
 
 /*
  * Class:     cn_com_test_opus_OpusDecoder
- * Method:    nativeDecodeBytes
- * Signature: ([BI)[B
+ * Method:    nativeDecodeFile
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)I
  */
-JNIEXPORT jbyteArray JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeBytes___3BI
-  (JNIEnv *, jobject, jbyteArray, jint);
+JNIEXPORT jint JNICALL Java_cn_com_test_opus_OpusDecoder_nativeDecodeFile
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     cn_com_test_opus_OpusDecoder

@@ -1,0 +1,3 @@
+*.log
+*.obj
+win32/VS2015/.vs/
