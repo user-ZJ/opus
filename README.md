@@ -5,16 +5,16 @@ opus 编解码库在windows、android、linux上使用
 
 ## 软件环境
 windows10  
-Visual Studio 2017
-opus 1.3 下载地址：https://archive.mozilla.org/pub/opus/opus-1.3.tar.gz
-eclipse 2018-12
-java8
+Visual Studio 2017   
+opus 1.3 下载地址：https://archive.mozilla.org/pub/opus/opus-1.3.tar.gz   
+eclipse 2018-12  
+java8  
 
 ## 使用Visual Studio 2017编译opus库
-打开->项目/解决方案->选择win32/VS2015/opus.sln  
-检查解决方案操作中使用默认勾选，点击确认  
+打开->项目/解决方案->选择win32/VS2015/opus.sln    
+检查解决方案操作中使用默认勾选，点击确认    
 在解决方案资源管理器中可以看到导入了5个项目  
-![](images/source_manager.jpg)  
+![](images/source_manager.jpg)    
 在opus项目上右键->设为启动项目，并配置x64编译  
 ![](images/config1.jpg)  
 生成->生成opus，在输出窗口可以看到编译过程，编译完成后在win32/VS2015/x64/Debug目录下会生成opus.lib静态库。  
