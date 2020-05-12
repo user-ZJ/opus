@@ -1,3 +1,10 @@
 *.log
 *.obj
 win32/VS2015/.vs/
+win32/VS2015/.vs/opus/v15/.suo
+win32/VS2015/.vs/opus/v15/.suo
+win32/VS2015/.vs/opus/v15/.suo
+win32/VS2015/.vs/opus/v15/Browse.VC.db
+java/opus/bin/cn/com/test/opus/BytesTransUtil.class
+java/opus/bin/cn/com/test/opus/OpusDecoder.class
+*.class
